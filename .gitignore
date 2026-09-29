@@ -1,0 +1,40 @@
+# Dependencies and package-manager caches
+node_modules/
+.pnp.*
+.npm/
+
+# Next.js output and generated types
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Tests and coverage
+test-results/
+playwright-report/
+playwright/.cache/
+coverage/
+
+# Local configuration and deployment state
+.env*
+!.env.example
+.vercel/
+.netlify/
+.codex/
+.agents/
+
+# Logs and temporary files
+*.log
+*.log.*
+*.tmp
+*.swp
+*.swo
+*~
+.cache/
+
+# OS and editor files
+.DS_Store
+._*
+Thumbs.db
+.idea/
+.vscode/
