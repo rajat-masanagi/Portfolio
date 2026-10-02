@@ -17,7 +17,7 @@ export default async function ProjectPage({params}:{params:Promise<{slug:string}
   const {slug}=await params; const index=allProjects.findIndex(p=>p.slug===slug); if(index===-1) notFound();
   const project=allProjects[index]; const next=allProjects[(index+1)%allProjects.length];
   return <div className="painted-content case-page" id="top"><Header/><main id="main" className="shell">
-    <div className="case-heading"><Link href="/#work" className="back-link">← Back to selected work</Link><p className="eyebrow">{project.category}</p><h1>{project.title}</h1><p className="case-description">{project.description}</p>
+    <div className="case-heading"><Link href="/#work" className="back-link"><Arrow direction="left"/> Back to selected work</Link><p className="eyebrow">{project.category}</p><h1>{project.title}</h1><p className="case-description">{project.description}</p>
       {project.stack.length > 0 && <div className="case-tags" aria-label="Technology stack">{project.stack.map(tag=><span key={tag}>{tag}</span>)}</div>}
       {project.repositoryUrl && <div className="profile-links"><a className="text-link" href={project.repositoryUrl}>GitHub repository <Arrow/></a><a className="text-link" href={`${project.repositoryUrl}#readme`}>Read the README <Arrow/></a></div>}
       {project.repositoryNote && <p className="repository-note">{project.repositoryNote}</p>}
@@ -30,7 +30,7 @@ export default async function ProjectPage({params}:{params:Promise<{slug:string}
       {project.approach.length > 0 && <section className="case-block"><h2>The approach</h2><div>{project.approach.map((item,i)=><div className="approach-item" key={item.title}><p className="eyebrow">0{i+1}</p><h3>{item.title}</h3><p>{item.text}</p></div>)}</div></section>}
       {project.setup && <section className="case-block"><h2>Getting started</h2><pre className="setup-instructions">{project.setup}</pre></section>}
       {(project.results.length > 0 || project.outcome) && <section className="case-block"><h2>The outcome</h2><div>{project.results.length > 0 && <div className="results-grid">{project.results.map(result=><div key={result.label}><div className="result-value">{result.value}</div><div className="result-label">{result.label}</div></div>)}</div>}{project.outcome && <p>{project.outcome}</p>}</div></section>}
-      <Link href={`/projects/${next.slug}/`} className="next-project"><div><p className="eyebrow">Next exploration</p><h2>{next.shortTitle}</h2></div><span aria-hidden="true">↗</span></Link>
+      <Link href={`/projects/${next.slug}/`} className="next-project"><div><p className="eyebrow">Next exploration</p><h2>{next.shortTitle}</h2></div><Arrow/></Link>
     </div>
   </main><Footer/></div>;
 }

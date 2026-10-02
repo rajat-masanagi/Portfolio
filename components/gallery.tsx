@@ -1,5 +1,6 @@
 'use client';
 
+import { Arrow, Cross } from './icons';
 import Image from 'next/image';
 import { assetPath } from '@/lib/paths';
 import { useEffect, useRef, useState } from 'react';
@@ -42,9 +43,9 @@ export function Gallery({ images, label, compact = false }: { images: GalleryIma
   }
   return <section className={`gallery${compact ? " gallery-compact" : ""}`} aria-label={label}>
     <div className="gallery-heading"><div><p className="eyebrow">{label}</p>{compact && <p className="gallery-note">A collection of milestones. Select a certificate to take a closer look.</p>}</div><div className="gallery-controls">
-      <button type="button" aria-label={`Previous image in ${label}`} disabled={current === 0} onClick={() => move(current - 1)}>←</button>
+      <button type="button" aria-label={`Previous image in ${label}`} disabled={current === 0} onClick={() => move(current - 1)}><Arrow direction="left"/></button>
       <span aria-live="polite" aria-atomic="true">{current + 1} / {images.length}</span>
-      <button type="button" aria-label={`Next image in ${label}`} disabled={atEnd} onClick={() => move(current + 1)}>→</button>
+      <button type="button" aria-label={`Next image in ${label}`} disabled={atEnd} onClick={() => move(current + 1)}><Arrow direction="right"/></button>
     </div></div>
     <div className="gallery-track" ref={track}>
       {images.map((photo, index) => <figure className="gallery-slide" key={photo.src}>
@@ -60,7 +61,7 @@ export function Gallery({ images, label, compact = false }: { images: GalleryIma
         dialog.current?.querySelector<HTMLButtonElement>('.viewer-close')?.focus();
       }
     }} onClick={event => { if (event.target === event.currentTarget) dialog.current?.close(); }}>
-      <button type="button" className="viewer-close" autoFocus onClick={() => dialog.current?.close()}>Close ×</button>
+      <button type="button" className="viewer-close" autoFocus onClick={() => dialog.current?.close()}>Close <Cross close/></button>
       {selected && <figure><GalleryPhoto photo={selected} landscape={compact} enlarged/><figcaption>{selected.kind && `${selected.kind} · `}{selected.caption || selected.alt}</figcaption></figure>}
     </dialog>
   </section>;

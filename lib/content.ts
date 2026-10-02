@@ -116,6 +116,7 @@ export const projects: Project[] = [
   },
   {
     "slug": "workflow-generator",
+    "kind": "workflow",
     "title": "No-Code Workflow Generator",
     "shortTitle": "From intent to execution.",
     "category": "Agentic AI",

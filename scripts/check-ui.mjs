@@ -23,6 +23,9 @@ for (const [name,width,height] of [['desktop',1440,1000],['tablet',768,1024],['m
  const page=await context.newPage();
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(base,{waitUntil:'networkidle'});
+ assert.doesNotMatch(await page.locator('body').innerText(), /[↗↑↓←→]|\p{Extended_Pictographic}/u, 'UI should not contain emoji or font arrows');
+ assert.ok(await page.locator('.ui-icon svg').count() > 10, 'Interface uses vector icons');
+ assert.equal(await page.locator('.art-lunar img').count(), 1);
 
  assert.equal(await page.locator('h1').textContent(),'Rajat Masanagi');
  assert.equal(await page.locator('.archive-year').count(),0);
@@ -45,9 +48,9 @@ for (const [name,width,height] of [['desktop',1440,1000],['tablet',768,1024],['m
  const next=gallery.getByRole('button',{name:/Next image/});
  assert.ok(await previous.isDisabled());
  await next.click();
- await page.waitForFunction(()=>document.querySelector('.gallery-controls span').textContent.startsWith('2 /'));
+ await page.waitForFunction(()=>document.querySelector('.gallery-controls > span[aria-live]').textContent.startsWith('2 /'));
  await previous.click();
- await page.waitForFunction(()=>document.querySelector('.gallery-controls span').textContent.startsWith('1 /'));
+ await page.waitForFunction(()=>document.querySelector('.gallery-controls > span[aria-live]').textContent.startsWith('1 /'));
  const enlarge=gallery.getByRole('button',{name:/Enlarge/}).first();
  await enlarge.click();
  assert.ok(await gallery.locator('dialog').evaluate(el=>el.open));
@@ -59,13 +62,13 @@ for (const [name,width,height] of [['desktop',1440,1000],['tablet',768,1024],['m
  assert.equal(await gallery.locator('dialog').evaluate(el=>el.open),false);
  assert.ok(await enlarge.evaluate(el=>el===document.activeElement));
  await enlarge.click();
- await gallery.getByRole('button',{name:'Close ×'}).click();
+ await gallery.getByRole('button',{name:'Close'}).click();
  assert.ok(await enlarge.evaluate(el=>el===document.activeElement));
  await gallery.locator('.gallery-track').evaluate(el=>{el.scrollLeft=el.scrollWidth;});
  await page.waitForFunction(()=>document.querySelector('.gallery-controls button:last-child').disabled);
  assert.ok(await next.isDisabled());
  await gallery.locator('.gallery-track').evaluate(el=>{el.scrollLeft=0;});
- await page.waitForFunction(()=>document.querySelector('.gallery-controls span').textContent.startsWith('1 /'));
+ await page.waitForFunction(()=>document.querySelector('.gallery-controls > span[aria-live]').textContent.startsWith('1 /'));
  const broken=await gallery.locator('img').evaluateAll(images=>images.filter(img=>img.complete && img.naturalWidth===0).map(img=>img.src));
  assert.deepEqual(broken,[]);
  await page.evaluate(()=>window.scrollTo(0,0));

@@ -22,3 +22,6 @@
 .image-viewer .certificate-frame{max-width:108svh;margin-inline:auto}
 
 .repository-note{font-size:11px;color:var(--muted);margin-top:16px}
+
+/* Draw interface symbols as vectors so mobile platforms cannot substitute emoji. */
+.ui-icon{display:inline-flex!important;align-items:center;justify-content:center;width:1.2em;height:1.2em;flex-shrink:0;vertical-align:-.2em;line-height:1;margin:0!important}.ui-icon svg{display:block;width:100%;height:100%}.footer>a:last-child,.back-link,.viewer-close{display:inline-flex;align-items:center;gap:8px}.gallery-controls button{display:inline-flex;align-items:center;justify-content:center}.publication .text-link .ui-icon{margin:0;font-size:14px}.lunar-terrain{object-fit:cover;transition:transform .6s}.project-card:hover .lunar-terrain{transform:scale(1.035)}.terrain-label{position:absolute;left:5%;top:8%;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#e5e7d9;text-shadow:0 1px 8px #101512}.art-lunar:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#10151255,transparent 30%,transparent 75%,#10151266)}.art-lunar .art-caption,.terrain-label{z-index:1}
