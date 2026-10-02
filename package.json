@@ -8,7 +8,9 @@
     "start": "node scripts/serve.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test:ui": "node scripts/check-ui.mjs"
+    "test:ui": "node scripts/check-ui.mjs",
+    "postbuild": "node scripts/prepare-export.mjs",
+    "check:export": "node scripts/check-export.mjs"
   },
   "dependencies": {
     "next": "^16.0.0",

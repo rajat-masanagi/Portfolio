@@ -1,6 +1,6 @@
 import type { Project } from '@/lib/content';
 
-export function ProjectArt({ kind }: { kind: Project['kind'] }) {
+export function ProjectArt({ kind, flow }: { kind: Project['kind']; flow?: Project['flow'] }) {
   return <div className={`project-art art-${kind}`} aria-hidden="true">
     <svg viewBox="0 0 560 350" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -8,6 +8,12 @@ export function ProjectArt({ kind }: { kind: Project['kind'] }) {
         <radialGradient id={`glow-${kind}`}><stop stopColor={kind === 'lunar' ? '#a1afb1' : '#9ea77a'} stopOpacity=".16"/><stop offset="1" stopColor="#111714" stopOpacity="0"/></radialGradient>
       </defs>
       <rect width="560" height="350" fill={`url(#grid-${kind})`}/><ellipse cx="280" cy="170" rx="270" ry="190" fill={`url(#glow-${kind})`}/>
+      {!kind && flow && <>
+        <path d="M165 175H205M355 175H395" stroke="#9ba982" strokeOpacity=".7"/>
+        {flow.map((label, i) => <g key={label}><rect x={15 + i * 190} y="140" width="150" height="70" rx="4" fill="#1c251e" stroke="#84917b"/><text x={90 + i * 190} y="168" textAnchor="middle" fill="#b6bf92" fontSize="10">0{i + 1}</text><text x={90 + i * 190} y="189" textAnchor="middle" fill="#e1e2ce" fontSize="11">{label}</text></g>)}
+        <text x="30" y="33" fontSize="9" fill="#b7c0a8" letterSpacing="2">FROM PROBLEM TO PRACTICE</text>
+        <text x="30" y="327" fontSize="9" fill="#a7b29c" letterSpacing="1">PROJECT APPROACH</text>
+      </>}
       {kind === 'booking' && <>
         <g stroke="#8e9a79" strokeOpacity=".55"><path d="M85 108H475M85 135H475M85 162H475" strokeDasharray="3 8"/><path d="M280 163V208M172 244H388"/></g>
         {Array.from({length: 13},(_,i)=><g key={i}><rect x={92+i*30} y="92" width="9" height="13" rx="4" fill="#b2ba96" opacity={.35+(i%3)*.2}/><rect x={92+i*30} y="122" width="9" height="13" rx="4" fill="#b2ba96" opacity=".35"/></g>)}

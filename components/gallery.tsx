@@ -1,8 +1,17 @@
 'use client';
 
 import Image from 'next/image';
+import { assetPath } from '@/lib/paths';
 import { useEffect, useRef, useState } from 'react';
 import type { GalleryImage } from '@/lib/content';
+
+function GalleryPhoto({ photo, landscape, enlarged = false }: { photo: GalleryImage; landscape: boolean; enlarged?: boolean }) {
+  const picture = <Image src={assetPath(photo.src)} alt={photo.alt} width={1600} height={1200}
+    sizes={enlarged ? '95vw' : landscape ? '(max-width: 640px) 75vw, 330px' : '(max-width: 640px) 90vw, 800px'}
+    className={landscape && photo.rotation ? 'certificate-rotated' : undefined}
+    style={landscape && photo.rotation ? { transform: `translate(-50%, -50%) rotate(${photo.rotation}deg)` } : undefined}/>;
+  return landscape ? <span className="certificate-frame">{picture}</span> : picture;
+}
 
 export function Gallery({ images, label, compact = false }: { images: GalleryImage[]; label: string; compact?: boolean }) {
   const track = useRef<HTMLDivElement>(null);
@@ -40,7 +49,7 @@ export function Gallery({ images, label, compact = false }: { images: GalleryIma
     <div className="gallery-track" ref={track}>
       {images.map((photo, index) => <figure className="gallery-slide" key={photo.src}>
         <button type="button" className="gallery-image" aria-label={`Enlarge ${photo.alt}`} onClick={event => { trigger.current = event.currentTarget; setSelected(photo); dialog.current?.showModal(); }}>
-          <Image src={photo.src} alt={photo.alt} width={1200} height={850} sizes={compact ? "(max-width: 640px) 75vw, 330px" : "(max-width: 640px) 90vw, 800px"} />
+          <GalleryPhoto photo={photo} landscape={compact}/>
         </button>
         <figcaption>{photo.kind && <span className="eyebrow">{photo.kind} · </span>}{photo.caption || photo.alt}<span className="sr-only"> Image {index + 1} of {images.length}</span></figcaption>
       </figure>)}
@@ -52,7 +61,7 @@ export function Gallery({ images, label, compact = false }: { images: GalleryIma
       }
     }} onClick={event => { if (event.target === event.currentTarget) dialog.current?.close(); }}>
       <button type="button" className="viewer-close" autoFocus onClick={() => dialog.current?.close()}>Close ×</button>
-      {selected && <figure><Image src={selected.src} alt={selected.alt} width={1600} height={1200} sizes="95vw" /><figcaption>{selected.kind && `${selected.kind} · `}{selected.caption || selected.alt}</figcaption></figure>}
+      {selected && <figure><GalleryPhoto photo={selected} landscape={compact} enlarged/><figcaption>{selected.kind && `${selected.kind} · `}{selected.caption || selected.alt}</figcaption></figure>}
     </dialog>
   </section>;
 }

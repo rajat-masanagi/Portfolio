@@ -11,7 +11,7 @@ const previews = [
  ['preview','Rajat Masanagi','Software Developer'],
  ['event-booking','Scalable Event Booking','Distributed systems · Java & Spring Boot'],
  ['lunar-navigation','Lunar Surface Navigation','Geospatial intelligence · Chandrayaan-2'],
- ['workflow-generator','No-Code Workflow Generator','Agentic AI · From intent to execution'],
+ ['workflow-generator','No-Code Workflow Generator','Specialist agents & outreach workflows'],
 ];
 for(const [slug,title,subtitle] of previews){
  const escape=s=>s.replaceAll('&','&amp;');

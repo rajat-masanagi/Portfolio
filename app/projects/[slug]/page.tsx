@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { assetPath } from '@/lib/paths';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { allProjects } from '@/lib/content';
@@ -10,17 +11,18 @@ export function generateStaticParams() { return allProjects.map(({slug})=>({slug
 export async function generateMetadata({ params }: { params: Promise<{slug:string}> }): Promise<Metadata> {
   const {slug}=await params; const project=allProjects.find(p=>p.slug===slug);
   if(!project) return { title: 'Project not found' };
-  return { title: project.title, description: project.description, openGraph: { title: project.title, description: project.description, type: 'article', images: [{url:project.kind ? `/images/social-${project.slug}.jpg` : '/images/social-preview.jpg',width:1200,height:630,alt:project.title}] } };
+  return { title: project.title, description: project.description, openGraph: { title: project.title, description: project.description, type: 'article', images: [{url:assetPath(['event-booking', 'lunar-navigation', 'workflow-generator'].includes(project.slug) ? `/images/social-${project.slug}.jpg` : '/images/social-preview.jpg'),width:1200,height:630,alt:project.title}] } };
 }
 export default async function ProjectPage({params}:{params:Promise<{slug:string}>}) {
   const {slug}=await params; const index=allProjects.findIndex(p=>p.slug===slug); if(index===-1) notFound();
   const project=allProjects[index]; const next=allProjects[(index+1)%allProjects.length];
   return <div className="painted-content case-page" id="top"><Header/><main id="main" className="shell">
-    <div className="case-heading"><Link href="/#work" className="back-link">← Back to selected work</Link><p className="eyebrow">{project.category} · {project.date}</p><h1>{project.title}</h1><p className="case-description">{project.description}</p>
+    <div className="case-heading"><Link href="/#work" className="back-link">← Back to selected work</Link><p className="eyebrow">{project.category}</p><h1>{project.title}</h1><p className="case-description">{project.description}</p>
       {project.stack.length > 0 && <div className="case-tags" aria-label="Technology stack">{project.stack.map(tag=><span key={tag}>{tag}</span>)}</div>}
-      {project.repositoryUrl && <a className="text-link" href={project.repositoryUrl}>GitHub repository <Arrow/></a>}
+      {project.repositoryUrl && <div className="profile-links"><a className="text-link" href={project.repositoryUrl}>GitHub repository <Arrow/></a><a className="text-link" href={`${project.repositoryUrl}#readme`}>Read the README <Arrow/></a></div>}
+      {project.repositoryNote && <p className="repository-note">{project.repositoryNote}</p>}
     </div>
-    {project.images?.length ? <Gallery images={project.images} label={`${project.title} screenshots`}/> : project.kind && <figure className="case-art"><ProjectArt kind={project.kind}/><figcaption>Conceptual illustration of the project approach, not a product screenshot.</figcaption></figure>}
+    {project.images?.length ? <Gallery images={project.images} label={`${project.title} screenshots`}/> : (project.kind || project.flow) && <figure className="case-art"><ProjectArt kind={project.kind} flow={project.flow}/><figcaption>Conceptual illustration of the project approach, not a product screenshot.</figcaption></figure>}
     <div className="case-body">
       {project.problem && <section className="case-block"><h2>The problem</h2><p>{project.problem}</p></section>}
       {!!project.features?.length && <section className="case-block"><h2>Features</h2><ul className="case-list">{project.features.map(feature=><li key={feature}>{feature}</li>)}</ul></section>}

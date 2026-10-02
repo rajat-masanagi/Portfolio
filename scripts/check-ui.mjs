@@ -5,7 +5,19 @@ import assert from 'node:assert/strict';
 const browser = await chromium.launch({headless:true, ...(process.env.CHROMIUM_PATH ? {executablePath:process.env.CHROMIUM_PATH} : {})});
 const base = process.env.TEST_URL || 'http://127.0.0.1:3000';
 await mkdir('test-results',{recursive:true});
+const basePath = new URL(base).pathname.replace(/\/$/, '');
 const failures=[];
+const projectRepositories = {
+ 'event-booking': 'Event-Booking',
+ 'lunar-navigation': null,
+ 'workflow-generator': null,
+ 'healthcare-crm': 'Healthcare-CRM',
+ 'adaptive-quiz-platform': 'Gamified_Learning',
+ 'crop-recommendation-engine': 'Crop-Reccomendation',
+ 'smart-waste-management': 'Waste_Management',
+ 'text-social': 'Social-Media',
+ 'repoatlas': 'GitHub-Repository-Analyzer',
+};
 for (const [name,width,height] of [['desktop',1440,1000],['tablet',768,1024],['mobile',390,844],['small-mobile',320,740]]) {
  const context=await browser.newContext({viewport:{width,height},reducedMotion:'reduce'});
  const page=await context.newPage();
@@ -13,6 +25,9 @@ for (const [name,width,height] of [['desktop',1440,1000],['tablet',768,1024],['m
  await page.goto(base,{waitUntil:'networkidle'});
 
  assert.equal(await page.locator('h1').textContent(),'Rajat Masanagi');
+ assert.equal(await page.locator('.archive-year').count(),0);
+ assert.ok(!/WeaveAI|RepoAtlas|Text Social|EcoSaathi|1of1|case study/i.test(await page.locator('main').innerText()));
+ assert.equal(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(16, 21, 18)', 'Theme CSS must load');
  assert.equal(await page.locator('.hero-subtitle').textContent(),'Software Developer');
  for (const href of ['https://github.com/rajat-masanagi', 'https://www.linkedin.com/in/rajat-masanagi/', 'https://leetcode.com/u/rajat_masanagi/', 'https://codolio.com/profile/lyses', 'https://reference-global.com/article/10.2478/ijssis-2026-0063']) assert.ok(await page.locator(`a[href="${href}"]`).count() > 0);
  assert.equal(await page.locator('.education-entry').count(),1);
@@ -55,35 +70,52 @@ for (const [name,width,height] of [['desktop',1440,1000],['tablet',768,1024],['m
  assert.deepEqual(broken,[]);
  await page.evaluate(()=>window.scrollTo(0,0));
  await page.screenshot({path:`test-results/${name}.png`,fullPage:true});
- assert.equal(await page.locator('.repository-link').count(),0, 'Unknown repositories must not produce links');
+ assert.equal(await page.getByRole('link',{name:/GitHub repository/,includeHidden:true}).count(),7);
+ for (const removed of ['geospatial-tourism-analysis','automatic-ad-optimization']) assert.equal(await page.locator(`a[href="${basePath}/projects/${removed}/"]`).count(),0);
+ assert.equal(await page.locator('.project-card .project-art').count(),3);
  assert.equal(await page.getByRole('link',{name:/View certificates on Google Drive/}).count(),1);
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`${name}: horizontal overflow`);
  const results=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();
  for(const v of results.violations)failures.push({viewport:name,id:v.id,impact:v.impact,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))});
  await page.getByRole('link',{name:'Work',exact:true}).click();
- await page.waitForURL('**/#work');
+ await page.waitForURL(url => url.hash === '#work');
  assert.ok(new URL(page.url()).hash==='#work');
  await page.locator('.archive summary').first().click();
  assert.ok(await page.locator('.archive details').first().getAttribute('open')!==null);
  await page.locator('.archive summary').first().click();
- const pdf=await page.request.get(`${base}/rajat-masanagi-resume-draft.pdf`);assert.equal(pdf.status(),200);
+ const pdf=await page.request.get(`${base}/Rajat-Masanagi-Resume.pdf`);assert.equal(pdf.status(),200);
  assert.equal(await page.locator('.contact-link').getAttribute('href'),'mailto:r.masanagi26@gmail.com');
  assert.deepEqual(errors,[],`${name}: browser errors`);
+ const badImages=await page.locator('img').evaluateAll(imgs=>imgs.filter(img=>img.complete && !img.naturalWidth).map(img=>img.src));
+ assert.deepEqual(badImages,[]);
  if(name==='desktop'){
    await page.keyboard.press('Control+Home');await page.goto(base);await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').textContent(),'Skip to content');
-   for(const slug of ['event-booking','lunar-navigation','workflow-generator','healthcare-crm','geospatial-tourism-analysis','automatic-ad-optimization','adaptive-quiz-platform','crop-recommendation-engine','smart-waste-management']){
+   for(const slug of Object.keys(projectRepositories)){
     const response=await page.goto(`${base}/projects/${slug}/`,{waitUntil:'networkidle'});assert.equal(response.status(),200);
     await page.screenshot({path:`test-results/${slug}.png`,fullPage:true});
     assert.equal(await page.locator('h1').count(),1);
+    assert.ok(!/WeaveAI|RepoAtlas|Text Social|EcoSaathi|1of1|case study/i.test(await page.locator('main').innerText()));
+    const socialImage=await page.locator('meta[property="og:image"]').getAttribute('content');
+    assert.ok(new URL(socialImage).pathname.startsWith(basePath+'/images/'));
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-    assert.equal(await page.getByRole('heading',{name:'Getting started',exact:true}).count(),0);
+    for (const heading of ['The problem','Features','My contribution','The approach','The outcome']) assert.equal(await page.getByRole('heading',{name:heading,exact:true}).count(),1,`${slug}: ${heading}`);
+    const repository=projectRepositories[slug];
+    const repoLink=page.getByRole('link',{name:/GitHub repository/});
+    if(repository) {
+      assert.equal(await repoLink.getAttribute('href'),`https://github.com/rajat-masanagi/${repository}`);
+      assert.equal(await page.getByRole('link',{name:/Read the README/}).getAttribute('href'),`https://github.com/rajat-masanagi/${repository}#readme`);
+    } else assert.equal(await repoLink.count(),0);
+    if(slug==='workflow-generator') assert.equal(await page.locator('.repository-note').textContent(),'Private repository');
+    const nextHref=await page.locator('.next-project').getAttribute('href');
+    assert.ok(Object.keys(projectRepositories).some(slug=>nextHref===`${basePath}/projects/${slug}/`));
     const a=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();for(const v of a.violations)failures.push({page:slug,id:v.id,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))});
     assert.equal(await page.locator('meta[property="og:image"]').count(),1);
    }
-   const missing=await page.goto(`${base}/not-a-page/`);assert.equal(missing.status(),404);await page.getByRole('link',{name:/Return to the landscape/}).click();await page.waitForURL(base+'/');assert.equal(new URL(page.url()).pathname,'/');
+   for (const removed of ['geospatial-tourism-analysis','automatic-ad-optimization']) { const response=await page.goto(`${base}/projects/${removed}/`);assert.equal(response.status(),404); }
+   const missing=await page.goto(`${base}/not-a-page/`);assert.equal(missing.status(),404);await page.getByRole('link',{name:/Return to the landscape/}).click();await page.waitForURL(base+'/');assert.equal(new URL(page.url()).pathname,basePath+'/');
  }
  if(name==='mobile'){
-  await page.goto(`${base}/projects/lunar-navigation/`,{waitUntil:'networkidle'});await page.screenshot({path:'test-results/case-mobile.png',fullPage:true});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  for(const slug of ['lunar-navigation','workflow-generator','text-social','repoatlas','healthcare-crm']) { await page.goto(`${base}/projects/${slug}/`,{waitUntil:'networkidle'});await page.screenshot({path:`test-results/${slug}-mobile.png`,fullPage:true});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)); }
  }
  await context.close();console.log(`${name}: layout, links, interactions, and accessibility checked`);
 }
