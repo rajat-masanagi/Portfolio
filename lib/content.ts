@@ -4,7 +4,7 @@ export type Project = {
   description: string; stack: string[]; problem: string; contribution: string;
   approach: { title: string; text: string }[]; results: { value: string; label: string }[];
   outcome: string; kind?: 'booking' | 'lunar' | 'workflow';
-  flow?: [string, string, string]; repositoryUrl?: string; repositoryNote?: string; images?: GalleryImage[]; features?: string[]; setup?: string;
+  flow?: [string, string, string]; repositoryUrl?: string; repositoryNote?: string; images?: GalleryImage[]; features?: string[];
 
 };
 export const projects: Project[] = [
@@ -166,7 +166,6 @@ export const projects: Project[] = [
     ],
     "outcome": "A full-stack prototype for experimenting with specialist agents and AI-assisted outreach. The repository is private; this overview is based on its supplied README. Individual integrations require their own credentials and dependencies.",
     "repositoryNote": "Private repository",
-    "setup": "Backend (Python 3.10+): create a virtual environment, install backend/requirements.txt, copy backend/.env.example to backend/.env, and configure the integrations you intend to use.\n\nFrom backend/:\nuvicorn app:app --reload --port 8000\n\nFrontend (Node.js 18+), in a second terminal:\ncd frontend\nnpm install\nnpm run dev\n\nPoint the frontend at http://localhost:8000. Keep provider keys and service-account credentials in the backend environment.",
     "flow": [
       "Task & context",
       "Specialist agents",
@@ -465,7 +464,6 @@ export const additionalProjects: Project[] = [
       "Kafka events",
       "Feed & search"
     ],
-    "setup": "With Docker Compose and approximately 4 GB of available memory, run from the repository root:\n\ndocker compose up --build -d\ndocker compose ps\n\nOpen http://localhost:8915.\n\nStop the local stack with:\ndocker compose down"
   },
   {
     "slug": "repoatlas",
@@ -523,7 +521,6 @@ export const additionalProjects: Project[] = [
       "Analysis & indexing",
       "Maps & grounded chat"
     ],
-    "setup": "Requires Java 21, Maven, Node.js 20+, Ollama, and a Pinecone index with 768 dimensions and cosine distance. Configure the repository’s .env.example with your own provider settings.\n\nInstall the local models:\nollama pull qwen2.5:3b-instruct\nollama pull nomic-embed-text:v1.5\n\nStart the backend from backend/:\nmvn spring-boot:run\n\nIn another terminal, from frontend/:\nnpm ci\nnpm run dev"
   }
 ];
 export const skills = [

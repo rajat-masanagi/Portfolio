@@ -28,7 +28,6 @@ export default async function ProjectPage({params}:{params:Promise<{slug:string}
       {!!project.features?.length && <section className="case-block"><h2>Features</h2><ul className="case-list">{project.features.map(feature=><li key={feature}>{feature}</li>)}</ul></section>}
       {project.contribution && <section className="case-block"><h2>My contribution</h2><p>{project.contribution}</p></section>}
       {project.approach.length > 0 && <section className="case-block"><h2>The approach</h2><div>{project.approach.map((item,i)=><div className="approach-item" key={item.title}><p className="eyebrow">0{i+1}</p><h3>{item.title}</h3><p>{item.text}</p></div>)}</div></section>}
-      {project.setup && <section className="case-block"><h2>Getting started</h2><pre className="setup-instructions">{project.setup}</pre></section>}
       {(project.results.length > 0 || project.outcome) && <section className="case-block"><h2>The outcome</h2><div>{project.results.length > 0 && <div className="results-grid">{project.results.map(result=><div key={result.label}><div className="result-value">{result.value}</div><div className="result-label">{result.label}</div></div>)}</div>}{project.outcome && <p>{project.outcome}</p>}</div></section>}
       <Link href={`/projects/${next.slug}/`} className="next-project"><div><p className="eyebrow">Next exploration</p><h2>{next.shortTitle}</h2></div><Arrow/></Link>
     </div>

@@ -25,7 +25,7 @@ for (const [name,width,height] of [['desktop',1440,1000],['tablet',768,1024],['m
  await page.goto(base,{waitUntil:'networkidle'});
  assert.doesNotMatch(await page.locator('body').innerText(), /[↗↑↓←→]|\p{Extended_Pictographic}/u, 'UI should not contain emoji or font arrows');
  assert.ok(await page.locator('.ui-icon svg').count() > 10, 'Interface uses vector icons');
- assert.equal(await page.locator('.art-lunar img').count(), 1);
+ assert.equal(await page.locator('.art-lunar svg').count(), 1);
 
  assert.equal(await page.locator('h1').textContent(),'Rajat Masanagi');
  assert.equal(await page.locator('.archive-year').count(),0);
@@ -95,6 +95,7 @@ for (const [name,width,height] of [['desktop',1440,1000],['tablet',768,1024],['m
    await page.keyboard.press('Control+Home');await page.goto(base);await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').textContent(),'Skip to content');
    for(const slug of Object.keys(projectRepositories)){
     const response=await page.goto(`${base}/projects/${slug}/`,{waitUntil:'networkidle'});assert.equal(response.status(),200);
+    assert.equal(await page.getByRole('heading', {name: 'Getting started'}).count(), 0);
     await page.screenshot({path:`test-results/${slug}.png`,fullPage:true});
     assert.equal(await page.locator('h1').count(),1);
     assert.ok(!/WeaveAI|RepoAtlas|Text Social|EcoSaathi|1of1|case study/i.test(await page.locator('main').innerText()));

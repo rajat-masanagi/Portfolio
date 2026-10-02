@@ -1,5 +1,3 @@
-import Image from 'next/image';
-import { assetPath } from '@/lib/paths';
 import type { Project } from '@/lib/content';
 
 function Node({ x, y, title, subtitle, wide = false }: { x: number; y: number; title: string; subtitle: string; wide?: boolean }) {
@@ -7,12 +5,24 @@ function Node({ x, y, title, subtitle, wide = false }: { x: number; y: number; t
   return <g transform={`translate(${x} ${y})`}><rect width={width} height="58" rx="7" fill="#1b251e" stroke="#7d8b6a" strokeOpacity=".8"/><path d="M12 15h13m-13 5h9" stroke="#b6bf92"/><text x="12" y="36" fill="#e5e7d9" fontSize="11">{title}</text><text x="12" y="49" fill="#a4af99" fontSize="8">{subtitle}</text><circle cx="0" cy="29" r="3" fill="#b6bf92"/><circle cx={width} cy="29" r="3" fill="#b6bf92"/></g>;
 }
 export function ProjectArt({ kind, flow }: { kind: Project['kind']; flow?: Project['flow'] }) {
-  if (kind === 'lunar') return <div className="project-art art-lunar" aria-hidden="true"><Image src={assetPath('/images/lunar-terrain.webp')} alt="" fill sizes="(max-width: 640px) 100vw, 50vw" className="lunar-terrain"/><span className="terrain-label">02 / Lunar surface</span><span className="art-caption">Concept illustration</span></div>;
   return <div className={`project-art art-${kind || 'overview'}`} aria-hidden="true">
     <svg viewBox="0 0 560 350" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs><pattern id={`dots-${kind || flow?.[0]}`} width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".65" fill="#a3b18d" opacity=".16"/></pattern></defs>
       <rect width="560" height="350" fill="#141d18"/><rect width="560" height="350" fill={`url(#dots-${kind || flow?.[0]})`}/>
-      {kind === 'workflow' ? <>
+      {kind === 'lunar' ? <>
+        <text x="28" y="32" fill="#b6bf92" fontSize="9" letterSpacing="2">02 / LUNAR SURFACE</text>
+        <g stroke="#7d8b6a" strokeWidth="1.2">
+          <rect x="70" y="72" width="300" height="218" rx="7" fill="#1b251e" fillOpacity=".65"/>
+          <path d="M90 103C150 72 190 137 253 100S323 84 351 106M90 255C160 210 204 283 277 243S330 235 351 248" strokeOpacity=".45"/>
+          <ellipse cx="176" cy="187" rx="62" ry="51"/><ellipse cx="176" cy="187" rx="48" ry="38" strokeOpacity=".65"/><path d="M131 196C138 155 187 144 215 177" stroke="#b6bf92"/>
+          <ellipse cx="284" cy="128" rx="27" ry="23"/><ellipse cx="284" cy="128" rx="19" ry="15" strokeOpacity=".5"/>
+          <ellipse cx="289" cy="233" rx="32" ry="27"/><ellipse cx="289" cy="233" rx="23" ry="18" strokeOpacity=".5"/>
+          <circle cx="112" cy="116" r="10"/><circle cx="242" cy="266" r="8"/>
+          <path d="M310 128H399M238 187H399M321 233H399" strokeDasharray="3 5" strokeOpacity=".65"/>
+        </g>
+        <g fill="#b6bf92"><circle cx="310" cy="128" r="3"/><circle cx="238" cy="187" r="3"/><circle cx="321" cy="233" r="3"/></g>
+        <g fill="#cbd2bc" fontSize="10"><text x="412" y="132">Surface</text><text x="412" y="191">Terrain</text><text x="412" y="237">Observation</text></g>
+      </> : kind === 'workflow' ? <>
         <text x="28" y="32" fill="#b6bf92" fontSize="9" letterSpacing="2">03 / IDEAS, CONNECTED</text>
         <g stroke="#8d9e77" strokeWidth="1.4"><path d="M142 174C185 174 166 97 210 97M142 174H210M354 174C389 174 379 97 414 97M354 174C389 174 379 251 414 251"/><path d="M250 203V242M314 203V242" strokeDasharray="3 5"/></g>
         <Node x={30} y={145} title="Your intent" subtitle="Prompt & context"/><Node x={210} y={68} title="Research" subtitle="Web & documents" wide/><Node x={210} y={145} title="Agent workflow" subtitle="Coordinate the task" wide/><Node x={414} y={68} title="Outreach" subtitle="Compose & deliver"/><Node x={414} y={222} title="Response" subtitle="Structured output"/>
