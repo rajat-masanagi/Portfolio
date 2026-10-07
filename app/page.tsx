@@ -6,9 +6,11 @@ import { Header, Footer, SectionHeading, Arrow } from '@/components/site';
 import { ProjectArt } from '@/components/project-art';
 import { projects, experience, additionalProjects, skills, problemSolving, profiles, education, achievements, certificates, certificateFolderUrl, publication } from '@/lib/content';
 import { Gallery } from '@/components/gallery';
+import { siteUrl } from '@/lib/site-url';
+export const metadata = { alternates: { canonical: siteUrl('/') } };
 function ProfileLinks() { return <div className="profile-links"><a className="text-link" href={profiles.github}>GitHub <Arrow/></a><a className="text-link" href={profiles.linkedin}>LinkedIn <Arrow/></a></div>; }
 export default function Home() {
-  return <><div id="top"/><Header home/><main id="main">
+  return <><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ '@context': 'https://schema.org', '@type': 'Person', name: 'Rajat Masanagi', url: siteUrl('/'), jobTitle: 'Software Developer', sameAs: [profiles.github, profiles.linkedin], homeLocation: { '@type': 'Place', name: 'Mumbai, India' } }).replace(/</g, '\\u003c') }}/><div id="top"/><Header home/><main id="main">
     <section className="hero" aria-labelledby="hero-title">
       <Image src={assetPath("/images/landscape.webp")} alt="An oil-pastel landscape of a blue-grey sky above moss-green hills, fading into charcoal shadows." fill priority sizes="100vw" className="hero-image"/>
       <div className="hero-shade"/>
